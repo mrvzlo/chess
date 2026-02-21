@@ -1,0 +1,16 @@
+{
+  "type": "module",
+  "scripts": {
+    "build": "node build.js",
+    "serve": "npx serve dist",
+    "watch-build": "nodemon --watch src --ext ts,html --exec \"npm run build\""
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.5",
+    "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "@types/pixi.js": "^4.8.9",
+    "pixi.js": "^8.11.0"
+  }
+}
