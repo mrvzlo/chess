@@ -1,7 +1,7 @@
 import { Color } from '../shared/color';
-import { Piece } from '../shared/piece';
+import { Piece, sameColor } from '../shared/piece';
 import { loadFEN, startingFEN } from './fen-loader';
-import { findPseudoLegalMoves, isAttacked, Move, MoveType, sameColor } from './legal-moves';
+import { findPseudoLegalMoves, isAttacked, Move, MoveType } from './legal-moves';
 
 export class Board {
   turn = Color.White;
@@ -72,4 +72,6 @@ export class Board {
   switchTurn() {
     this.turn = this.turn === Color.White ? Color.Black : Color.White;
   }
+
+  getLegalMovesFrom = (from: number) => this.legalMoves.filter((x) => x.fromPos === from);
 }

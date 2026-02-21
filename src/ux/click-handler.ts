@@ -1,5 +1,5 @@
 import { Application, Container, Graphics } from 'pixi.js';
-import { tileSize } from '../drawing/board-drawing';
+import { renderHighlight, tileSize } from '../drawing/board-drawing';
 import { Board } from '../logic/board';
 import { drawPieces } from '../drawing/piece-drawing';
 
@@ -42,9 +42,9 @@ function handleClick(board: Board, newPos: number) {
 
   if (firstPos === null) {
     if (piece === 0) return;
-    if (getLegalMovesFrom(board, newPos).length === 0) return;
+    if (board.getLegalMovesFrom(newPos).length === 0) return;
     firstPos = newPos;
-    renderHighlight(board, newPos);
+    renderHighlight(board, newPos, highlightContainer);
     return;
   }
 
@@ -53,7 +53,7 @@ function handleClick(board: Board, newPos: number) {
     return;
   }
 
-  const move = getLegalMovesFrom(board, firstPos).find((x) => x.toPos === newPos);
+  const move = board.getLegalMovesFrom(firstPos).find((x) => x.toPos === newPos);
   if (move) {
     board.makeMove(move);
     board.getLegalMoves();
@@ -62,23 +62,6 @@ function handleClick(board: Board, newPos: number) {
   clearSelection();
   drawPieces(pieceContainer, board);
 }
-
-function renderHighlight(board: Board, square: number) {
-  highlightContainer.removeChildren();
-  const rank = square >> 4;
-  const file = square & 7;
-  const g = new Graphics();
-  g.rect(file * tileSize, rank * tileSize, tileSize, tileSize).fill(0xc59873);
-  getLegalMovesFrom(board, square).forEach((x) => {
-    const toRank = x.toPos >> 4;
-    const toFile = x.toPos & 7;
-    const size = tileSize / 4;
-    g.ellipse(toFile * tileSize + size * 2, toRank * tileSize + size * 2, size, size).fill(0xc59873);
-  });
-  highlightContainer.addChild(g);
-}
-
-const getLegalMovesFrom = (board: Board, from: number) => board.legalMoves.filter((x) => x.fromPos === from);
 
 function clearSelection() {
   firstPos = null;

@@ -1,8 +1,8 @@
-import { Application, Graphics, Text, TextStyleOptions } from 'pixi.js';
+import { Application, Container, Graphics, Text, TextStyleOptions } from 'pixi.js';
 import { DARK, LIGHT } from './board-colors';
 
 const boardSize = 8;
-export const tileSize = 80;
+export const tileSize = 100;
 
 export const drawBoard = (app: Application) => {
   const board = new Graphics();
@@ -14,6 +14,10 @@ export const drawBoard = (app: Application) => {
 
       board.rect(file * tileSize, rank * tileSize, tileSize, tileSize).fill(color);
     }
+  }
+  for (let rank = 0; rank < boardSize; rank++) {
+    board.rect(0, rank * tileSize - 1, tileSize * boardSize, 2).fill(0x000);
+    board.rect(rank * tileSize - 1, 0, 2, tileSize * boardSize).fill(0x000);
   }
   app.stage.addChild(board);
   const style: TextStyleOptions = { fontSize: 16, fill: 0x543322 };
@@ -27,4 +31,22 @@ export const drawBoard = (app: Application) => {
     file.x = 5;
     app.stage.addChild(file);
   }
+};
+
+export const renderHighlight = (board: Board, square: number, container: Container) => {
+  container.removeChildren();
+  const rank = square >> 4;
+  const file = square & 7;
+  const g = new Graphics();
+  g.alpha = 0.5;
+  g.rect(file * tileSize + 1, rank * tileSize + 1, tileSize - 2, tileSize - 2).fill(0xaaccaa);
+  board.getLegalMovesFrom(square).forEach((x) => {
+    const toRank = x.toPos >> 4;
+    const toFile = x.toPos & 7;
+    const size = tileSize / 3;
+    g.ellipse(toFile * tileSize + size * 1.5, toRank * tileSize + size * 1.5, size, size)
+      .fill(0xaaccaa)
+      .stroke(0);
+  });
+  container.addChild(g);
 };

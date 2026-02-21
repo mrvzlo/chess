@@ -1,5 +1,5 @@
 import { Color } from '../shared/color';
-import { Piece } from '../shared/piece';
+import { Piece, sameColor, samePiece } from '../shared/piece';
 import { Board } from './board';
 import { bishopOffsets, kingOffsets, knightOffsets, queenOffsets, rookOffsets } from './offsets';
 
@@ -15,14 +15,15 @@ export enum MoveType {
   PseudoLegal = 0,
   Capture = 1,
   Promotion = 2,
-  PawnJump = 4,
+  LongMove = 4,
   EnPassant = 8,
+  Castle = 16,
 }
 
 export function findPseudoLegalMoves(board: Board) {
   const result: Move[] = [];
   const lastMove = board.history[board.history.length - 1];
-  const enPassant = lastMove && lastMove.moveType === MoveType.PawnJump ? lastMove.toPos : 0x88;
+  const enPassant = lastMove && lastMove.moveType === MoveType.LongMove ? lastMove.toPos : 0x88;
   for (let i = 0; i < board.squares.length; i++) {
     const piece = board.squares[i];
     if (piece === Piece.None || i & 0x88) continue;
@@ -131,7 +132,7 @@ export function getPawnMoves(fromPos: number, squares: Int8Array, result: Move[]
   const twoStep = oneStep + direction;
   const twoStepType = getMoveType(fromPos, twoStep, squares);
   if (twoStepType !== MoveType.PseudoLegal) return;
-  result.push({ fromPos, toPos: twoStep, moveType: MoveType.PawnJump, captured: squares[twoStep] });
+  result.push({ fromPos, toPos: twoStep, moveType: MoveType.LongMove, captured: squares[twoStep] });
 }
 
 export function isPromotion(toPos: number) {
@@ -158,6 +159,3 @@ export function getMoveType(fromPos: number, toPos: number, squares: Int8Array) 
   if (sameColor(squares[fromPos], squares[toPos])) return MoveType.Illegal;
   return MoveType.Capture;
 }
-
-export const sameColor = (a: number, b: number) => (a & Color.Black) === (b & Color.Black);
-export const samePiece = (a: number, b: number) => (a & Piece.Mask) === (b & Piece.Mask);
