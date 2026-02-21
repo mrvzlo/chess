@@ -32,8 +32,8 @@ export function setupClickHandling(app: Application, board: Board) {
     drawPieces(pieceContainer, board);
   });
 
-  drawPieces(pieceContainer, board);
   board.getLegalMoves();
+  drawPieces(pieceContainer, board);
   window.baba = () => board;
 }
 

@@ -1,4 +1,4 @@
-import { Container, Graphics, Poin } from 'pixi.js';
+import { Container, Graphics, Point, Text } from 'pixi.js';
 import { Board } from '../logic/board';
 import { tileSize } from './board-drawing';
 import { Color } from '../shared/color';
@@ -32,13 +32,21 @@ export const drawPieces = (container: Container, board: Board) => {
     g.scale = new Point(tileSize / 80, tileSize / 80);
     container.addChild(g);
   }
-};
 
-const PieceCodeMap: Record<number, string> = {
-  1: 'P',
-  2: 'N',
-  3: 'B',
-  4: 'R',
-  5: 'Q',
-  6: 'K',
+  if (board.isStaleMate() || board.isCheckMate()) {
+    let text = '';
+    if (board.isStaleMate()) text = 'Stalemate';
+    if (board.isCheckMate()) text = board.turn === Color.White ? 'Black won' : 'White won';
+
+    const g = new Graphics();
+    g.alpha = 0.8;
+    g.rect(2.5 * tileSize, 3.5 * tileSize, 3 * tileSize, tileSize)
+      .fill(0x444444)
+      .stroke(0);
+    container.addChild(g);
+    const alert = new Text({ text, anchor: 0.5, style: { fill: 0xeeeeee, fontSize: 45, strokeThickness: 2, stroke: 0 } });
+    alert.x = 4 * tileSize;
+    alert.y = 4 * tileSize;
+    container.addChild(alert);
+  }
 };

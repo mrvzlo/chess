@@ -1,5 +1,7 @@
 import { Application, Container, Graphics, Text, TextStyleOptions } from 'pixi.js';
 import { DARK, LIGHT } from './board-colors';
+import { Board } from '../logic/board';
+import { MoveType } from '../logic/legal-moves';
 
 const boardSize = 8;
 export const tileSize = 100;
@@ -40,13 +42,18 @@ export const renderHighlight = (board: Board, square: number, container: Contain
   const g = new Graphics();
   g.alpha = 0.5;
   g.rect(file * tileSize + 1, rank * tileSize + 1, tileSize - 2, tileSize - 2).fill(0xaaccaa);
-  board.getLegalMovesFrom(square).forEach((x) => {
-    const toRank = x.toPos >> 4;
-    const toFile = x.toPos & 7;
+  board.getLegalMovesFrom(square).forEach((move) => {
+    const toRank = move.toPos >> 4;
+    const toFile = move.toPos & 7;
     const size = tileSize / 3;
-    g.ellipse(toFile * tileSize + size * 1.5, toRank * tileSize + size * 1.5, size, size)
-      .fill(0xaaccaa)
-      .stroke(0);
+    if (move.moveType & MoveType.Capture)
+      g.rect(toFile * tileSize + size / 2, toRank * tileSize + size / 2, size * 2, size * 2)
+        .fill(0xccaaaa)
+        .stroke(0);
+    else
+      g.ellipse(toFile * tileSize + size * 1.5, toRank * tileSize + size * 1.5, size, size)
+        .fill(0xaaccaa)
+        .stroke(0);
   });
   container.addChild(g);
 };
